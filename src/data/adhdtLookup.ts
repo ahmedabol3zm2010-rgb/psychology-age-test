@@ -1,6 +1,6 @@
-import norms from '../../adhdt_male_norms.json';
-import adhdRates from '../../adhdt_male_adhd_rates.json';
-import percentiles from '../../adhdt_male_percentiles.json';
+import norms from '../../adhdt_male_norms.json' with { type: 'json' };
+import adhdRates from '../../adhdt_male_adhd_rates.json' with { type: 'json' };
+import percentiles from '../../adhdt_male_percentiles.json' with { type: 'json' };
 
 export type ScaleKey = 'hyperactivity' | 'impulsivity' | 'inattention' | 'total';
 
@@ -63,39 +63,65 @@ export function lookupStandardScore(rawScore: number | '', ageYears: number | nu
     return { ageGroup, standardScore: null, message: 'خارج النطاق العمري للاختبار.' };
   }
 
-  const scaleTable = norms.ageGroups[ageGroup][scale] as Record<string, number>;
-  const normalized = String(rawScore);
+  let standardScore: number | null = null;
 
-  if (scale === 'hyperactivity' || scale === 'impulsivity') {
-    if (rawScore >= 21 && rawScore <= 36) {
+  if (scale === 'total') {
+    // Total scale uses raw scores 0-72
+    if (rawScore < 0 || rawScore > 72) {
       return {
         ageGroup,
         standardScore: null,
-        message: 'لا توجد درجة معيارية مسجلة لهذه الدرجة الخام في هذا المقياس',
+        message: 'الدرجة الخام المدخلة خارج نطاق جدول المعايير لهذا المقياس.',
       };
     }
+
+    // First check subScales for 0-36
+    if (rawScore <= 36) {
+      const subRow = norms.subScales.find(row => row.raw === rawScore);
+      if (subRow && subRow.total) {
+        standardScore = subRow.total[ageGroup];
+      }
+    } else {
+      // Check totalScale for 37-72
+      const totalRow = norms.totalScale.find(row => row.raw === rawScore);
+      if (totalRow) {
+        standardScore = totalRow.total[ageGroup];
+      }
+    }
+  } else {
+    // Sub scales use raw scores 0-26
+    if (rawScore < 0 || rawScore > 26) {
+      return {
+        ageGroup,
+        standardScore: null,
+        message: 'الدرجة الخام المدخلة خارج نطاق جدول المعايير لهذا المقياس.',
+      };
+    }
+
+    const subRow = norms.subScales.find(row => row.raw === rawScore);
+    if (!subRow) {
+      return {
+        ageGroup,
+        standardScore: null,
+        message: 'لا توجد درجة معيارية لهذه الدرجة الخام في جدول ADHDT للذكور.',
+      };
+    }
+
+    standardScore = subRow[scale][ageGroup];
   }
 
-  if (scale === 'inattention' && rawScore >= 27 && rawScore <= 36) {
+  if (standardScore === null || standardScore === undefined) {
     return {
       ageGroup,
       standardScore: null,
-      message: 'لا توجد درجة معيارية مسجلة لهذه الدرجة الخام في هذا المقياس',
-    };
-  }
-
-  if (!(normalized in scaleTable)) {
-    return {
-      ageGroup,
-      standardScore: null,
-      message: 'لا توجد درجة معيارية مسجلة لهذه الدرجة الخام في هذا المقياس',
+      message: 'لا توجد درجة معيارية لهذه الدرجة الخام في جدول ADHDT للذكور.',
     };
   }
 
   return {
     ageGroup,
-    standardScore: scaleTable[normalized],
-    message: 'تم العثور على الدرجة المعيارية من جدول ADHD-T.',
+    standardScore: standardScore,
+    message: 'تم العثور على الدرجة المعيارية من جدول ADHDT للذكور.',
   };
 }
 
@@ -114,38 +140,64 @@ export function lookupADHDRate(rawScore: number | '', ageYears: number | null, s
     return { ageGroup, standardScore: null, message: 'خارج النطاق العمري للاختبار.' };
   }
 
-  const scaleTable = adhdRates.ageGroups[ageGroup][scale] as Record<string, number>;
-  const normalized = String(rawScore);
+  let adhdRate: number | null = null;
 
-  if (scale === 'hyperactivity' || scale === 'impulsivity') {
-    if (rawScore >= 21 && rawScore <= 36) {
+  if (scale === 'total') {
+    // Total scale uses raw scores 0-72
+    if (rawScore < 0 || rawScore > 72) {
       return {
         ageGroup,
         standardScore: null,
-        message: 'لا توجد درجة معيارية مسجلة لهذه الدرجة الخام في هذا المقياس',
+        message: 'الدرجة الخام المدخلة خارج نطاق جدول المعايير لهذا المقياس.',
       };
     }
+
+    // First check subScales for 0-36
+    if (rawScore <= 36) {
+      const subRow = adhdRates.subScales.find(row => row.raw === rawScore);
+      if (subRow && subRow.total) {
+        adhdRate = subRow.total[ageGroup];
+      }
+    } else {
+      // Check totalScale for 37-72
+      const totalRow = adhdRates.totalScale.find(row => row.raw === rawScore);
+      if (totalRow) {
+        adhdRate = totalRow.total[ageGroup];
+      }
+    }
+  } else {
+    // Sub scales use raw scores 0-26
+    if (rawScore < 0 || rawScore > 26) {
+      return {
+        ageGroup,
+        standardScore: null,
+        message: 'الدرجة الخام المدخلة خارج نطاق جدول المعايير لهذا المقياس.',
+      };
+    }
+
+    const subRow = adhdRates.subScales.find(row => row.raw === rawScore);
+    if (!subRow) {
+      return {
+        ageGroup,
+        standardScore: null,
+        message: 'لا توجد نسبة اضطراب لهذه الدرجة الخام في جدول ADHDT للذكور.',
+      };
+    }
+
+    adhdRate = subRow[scale][ageGroup];
   }
 
-  if (scale === 'inattention' && rawScore >= 27 && rawScore <= 36) {
+  if (adhdRate === null || adhdRate === undefined) {
     return {
       ageGroup,
       standardScore: null,
-      message: 'لا توجد درجة معيارية مسجلة لهذه الدرجة الخام في هذا المقياس',
-    };
-  }
-
-  if (!(normalized in scaleTable)) {
-    return {
-      ageGroup,
-      standardScore: null,
-      message: 'لا توجد درجة معيارية مسجلة لهذه الدرجة الخام في هذا المقياس',
+      message: 'لا توجد نسبة اضطراب لهذه الدرجة الخام في جدول ADHDT للذكور.',
     };
   }
 
   return {
     ageGroup,
-    standardScore: scaleTable[normalized],
+    standardScore: adhdRate,
     message: 'تم العثور على نسبة اضطراب ADHD من جدول ملحق (5).',
   };
 }
@@ -160,38 +212,64 @@ export function lookupPercentile(rawScore: number | '', ageYears: number | null,
     return { ageGroup, standardScore: null, message: 'خارج النطاق العمري للاختبار.' };
   }
 
-  const scaleTable = percentiles.ageGroups[ageGroup][scale] as Record<string, number>;
-  const normalized = String(rawScore);
+  let percentile: number | null = null;
 
-  if (scale === 'hyperactivity' || scale === 'impulsivity') {
-    if (rawScore >= 21 && rawScore <= 36) {
+  if (scale === 'total') {
+    // Total scale uses raw scores 0-72
+    if (rawScore < 0 || rawScore > 72) {
       return {
         ageGroup,
         standardScore: null,
-        message: 'لا توجد درجة مئينية مسجلة لهذه الدرجة الخام في هذا المقياس',
+        message: 'الدرجة الخام المدخلة خارج نطاق جدول المعايير لهذا المقياس.',
       };
     }
+
+    // First check subScales for 0-36
+    if (rawScore <= 36) {
+      const subRow = percentiles.subScales.find(row => row.raw === rawScore);
+      if (subRow && subRow.total) {
+        percentile = subRow.total[ageGroup];
+      }
+    } else {
+      // Check totalScale for 37-72
+      const totalRow = percentiles.totalScale.find(row => row.raw === rawScore);
+      if (totalRow) {
+        percentile = totalRow.total[ageGroup];
+      }
+    }
+  } else {
+    // Sub scales use raw scores 0-26
+    if (rawScore < 0 || rawScore > 26) {
+      return {
+        ageGroup,
+        standardScore: null,
+        message: 'الدرجة الخام المدخلة خارج نطاق جدول المعايير لهذا المقياس.',
+      };
+    }
+
+    const subRow = percentiles.subScales.find(row => row.raw === rawScore);
+    if (!subRow) {
+      return {
+        ageGroup,
+        standardScore: null,
+        message: 'لا توجد درجة مئينية لهذه الدرجة الخام في جدول ADHDT للذكور.',
+      };
+    }
+
+    percentile = subRow[scale][ageGroup];
   }
 
-  if (scale === 'inattention' && rawScore >= 27 && rawScore <= 36) {
+  if (percentile === null || percentile === undefined) {
     return {
       ageGroup,
       standardScore: null,
-      message: 'لا توجد درجة مئينية مسجلة لهذه الدرجة الخام في هذا المقياس',
-    };
-  }
-
-  if (!(normalized in scaleTable)) {
-    return {
-      ageGroup,
-      standardScore: null,
-      message: 'لا توجد درجة مئينية مسجلة لهذه الدرجة الخام في هذا المقياس',
+      message: 'لا توجد درجة مئينية لهذه الدرجة الخام في جدول ADHDT للذكور.',
     };
   }
 
   return {
     ageGroup,
-    standardScore: scaleTable[normalized],
-    message: 'تم العثور على الدرجة المئينية من جدول ملحق (3).',
+    standardScore: percentile,
+    message: 'تم العثور على الدرجة المئينية من جدول ADHDT للذكور.',
   };
 }

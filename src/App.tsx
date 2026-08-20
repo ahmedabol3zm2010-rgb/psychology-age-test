@@ -4,6 +4,7 @@ import PatientForm from './components/PatientForm';
 import ScoreForm from './components/ScoreForm';
 import ResultsTable from './components/ResultsTable';
 import ReportPanel from './components/ReportPanel';
+import ComprehensiveReport from './components/ComprehensiveReport';
 import Footer from './components/Footer';
 import type { AgeGroup, PatientFormData, ReviewRow, ResultRow, ScoreFormData } from './types/adhd';
 import { lookupStandardScore, interpretStandardScore, lookupADHDRate, lookupPercentile } from './data/adhdtLookup';
@@ -188,7 +189,7 @@ function getResultRows(scores: ScoreFormData, ageGroup: AgeGroup, gender: 'ذك�
       : { standardScore: null as number | null, message: '' };
     const formattedADHDRate = adhdLookup.standardScore === null ? '—' : adhdLookup.standardScore.toString();
 
-    const percentileLookup = (lookup.standardScore !== null && !lookupMessage)
+    const percentileLookup = (!lookupMessage)
       ? lookupPercentile(rawScore as number | '', ageYears, key)
       : { standardScore: null as number | null, message: '' };
     const formattedPercentile = percentileLookup.standardScore === null ? '—' : percentileLookup.standardScore.toString();
@@ -402,6 +403,14 @@ export default function App() {
         </section>
 
         <ResultsTable rows={results} reviewApproved={reviewApproved} />
+        {reviewApproved && results.length > 0 && (
+          <ComprehensiveReport 
+            results={results} 
+            patientName={patient.fullName}
+            ageText={ageText}
+            ageGroupLabel={ageGroupLabel}
+          />
+        )}
         <Footer />
       </div>
     </div>
