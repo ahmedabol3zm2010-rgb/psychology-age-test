@@ -2,16 +2,18 @@ import { getInterpretation } from './adhdtLookup';
 
 // اختبار حدود نطاقات التفسير
 const testCases = [
-  // اختبار الحد الأدنى والأعلى لكل فئة
-  { score: 5.99, expected: 'منخفض' }, // أقل من 6
-  { score: 6.0, expected: 'أقل من المتوسط' }, // >= 6 و < 8
-  { score: 7.99, expected: 'أقل من المتوسط' }, // < 8
-  { score: 8.0, expected: 'متوسط' }, // >= 8 و < 13
-  { score: 12.99, expected: 'متوسط' }, // < 13
-  { score: 13.0, expected: 'فوق المتوسط' }, // >= 13 و < 15
-  { score: 14.99, expected: 'فوق المتوسط' }, // < 15
-  { score: 15.0, expected: 'مرتفع' }, // >= 15
-  { score: 20.0, expected: 'مرتفع' }, // >= 15
+  // اختبار الحد الأدنى والأعلى لكل فئة (7 مستويات)
+  { score: 3.99, expected: 'منخفض جداً' }, // < 4
+  { score: 4.0, expected: 'منخفض' }, // 4-6
+  { score: 6.0, expected: 'منخفض' }, // 4-6
+  { score: 7.0, expected: 'أقل من المتوسط' }, // = 7
+  { score: 8.0, expected: 'متوسط' }, // 8-12
+  { score: 12.0, expected: 'متوسط' }, // 8-12
+  { score: 13.0, expected: 'فوق المتوسط' }, // = 13
+  { score: 14.0, expected: 'مرتفع' }, // 14-16
+  { score: 16.0, expected: 'مرتفع' }, // 14-16
+  { score: 17.0, expected: 'مرتفع جداً' }, // >= 17
+  { score: 20.0, expected: 'مرتفع جداً' }, // >= 17
 ];
 
 console.log('اختبار حدود نطاقات التفسير:');

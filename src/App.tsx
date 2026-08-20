@@ -5,9 +5,11 @@ import ScoreForm from './components/ScoreForm';
 import ResultsTable from './components/ResultsTable';
 import ReportPanel from './components/ReportPanel';
 import ComprehensiveReport from './components/ComprehensiveReport';
+import ADHDResultsChart from './components/ADHDResultsChart';
 import Footer from './components/Footer';
 import type { AgeGroup, PatientFormData, ReviewRow, ResultRow, ScoreFormData } from './types/adhd';
 import { lookupStandardScore, interpretStandardScore, lookupADHDRate, lookupPercentile } from './data/adhdtLookup';
+
 
 const initialPatient: PatientFormData = {
   fullName: '',
@@ -403,6 +405,13 @@ export default function App() {
         </section>
 
         <ResultsTable rows={results} reviewApproved={reviewApproved} />
+
+        {reviewApproved && results.length > 0 && (
+          <section className="overflow-hidden rounded-3xl border border-white/10 bg-slate-800/80 p-6 shadow-xl shadow-black/20">
+            <ADHDResultsChart results={results} />
+          </section>
+        )}
+
         {reviewApproved && results.length > 0 && (
           <ComprehensiveReport 
             results={results} 

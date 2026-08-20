@@ -1,0 +1,66 @@
+.conners-chart-wrapper {
+  direction: rtl;
+  text-align: right;
+  width: 100%;
+}
+
+.conners-chart-container {
+  position: relative;
+  width: 100%;
+  height: 420px;
+}
+
+.conners-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 20px;
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.conners-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.conners-legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.conners-legend-label {
+  color: #cbd5e1;
+  font-size: 13px;
+  white-space: nowrap;
+  font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .conners-chart-container {
+    height: 320px;
+  }
+
+  .conners-chart-legend {
+    gap: 8px 12px;
+    padding: 8px;
+  }
+
+  .conners-legend-label {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .conners-chart-container {
+    height: 280px;
+  }
+}

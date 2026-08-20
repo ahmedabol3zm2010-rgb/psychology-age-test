@@ -1,0 +1,142 @@
+.adhd-chart-wrapper {
+  direction: rtl;
+  text-align: right;
+  width: 100%;
+}
+
+.adhd-chart-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  margin-bottom: 16px;
+}
+
+/* Legend */
+.adhd-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 20px;
+  padding: 10px 12px;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 20px;
+}
+
+.adhd-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.adhd-legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.adhd-legend-label {
+  color: #cbd5e1;
+  font-size: 13px;
+  white-space: nowrap;
+  font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* Summary Table */
+.adhd-summary-table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.adhd-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  text-align: right;
+  font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+
+.adhd-summary-table thead {
+  background: rgba(30, 41, 59, 0.7);
+}
+
+.adhd-summary-table th {
+  padding: 10px 14px;
+  color: #94a3b8;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.adhd-summary-table td {
+  padding: 10px 14px;
+  color: #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.adhd-summary-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.adhd-table-label {
+  font-weight: 500;
+}
+
+.adhd-table-score {
+  font-variant-numeric: tabular-nums;
+}
+
+.adhd-table-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Disclaimer */
+.adhd-chart-disclaimer {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .adhd-chart-container {
+    height: 300px;
+  }
+
+  .adhd-chart-legend {
+    gap: 6px 12px;
+    padding: 8px;
+  }
+
+  .adhd-legend-label {
+    font-size: 11px;
+  }
+
+  .adhd-summary-table {
+    font-size: 12px;
+  }
+
+  .adhd-summary-table th,
+  .adhd-summary-table td {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .adhd-chart-container {
+    height: 260px;
+  }
+}

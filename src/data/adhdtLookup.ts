@@ -23,33 +23,45 @@ function getAgeGroupFromAge(ageYears: number | null): '3-7' | '8-23' | 'outOfRan
 }
 
 export function getInterpretation(standardScore: number): InterpretationResult {
-  if (standardScore >= 15) {
+  if (standardScore >= 17) {
     return {
-      disorderRatio: '121 فأكثر',
+      disorderRatio: '131 فأكثر',
+      status: 'مرتفع جداً',
+    };
+  }
+  if (standardScore >= 14 && standardScore < 17) {
+    return {
+      disorderRatio: '121-130',
       status: 'مرتفع',
     };
   }
-  if (standardScore >= 13 && standardScore < 15) {
+  if (standardScore === 13) {
     return {
       disorderRatio: '111-120',
       status: 'فوق المتوسط',
     };
   }
-  if (standardScore >= 8 && standardScore < 13) {
+  if (standardScore >= 8 && standardScore <= 12) {
     return {
       disorderRatio: '90-110',
       status: 'متوسط',
     };
   }
-  if (standardScore >= 6 && standardScore < 8) {
+  if (standardScore === 7) {
     return {
       disorderRatio: '80-89',
       status: 'أقل من المتوسط',
     };
   }
+  if (standardScore >= 4 && standardScore <= 6) {
+    return {
+      disorderRatio: '70-79',
+      status: 'منخفض',
+    };
+  }
   return {
-    disorderRatio: '79 فأقل',
-    status: 'منخفض',
+    disorderRatio: '69 فأقل',
+    status: 'منخفض جداً',
   };
 }
 
