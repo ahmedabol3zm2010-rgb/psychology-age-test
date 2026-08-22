@@ -407,7 +407,7 @@ export default function App() {
         <ResultsTable rows={results} reviewApproved={reviewApproved} />
 
         {reviewApproved && results.length > 0 && (
-          <section className="overflow-hidden rounded-3xl border border-white/10 bg-slate-800/80 p-6 shadow-xl shadow-black/20">
+          <section className="rounded-3xl border border-white/10 bg-slate-800/80 p-6 shadow-xl shadow-black/20">
             <ADHDResultsChart results={results} />
           </section>
         )}

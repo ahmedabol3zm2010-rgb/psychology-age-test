@@ -9,12 +9,37 @@ import {
   Tooltip,
   Legend,
   type TooltipItem,
+  type Chart as ChartType,
+  type Plugin,
 } from 'chart.js';
 import { getScoreLevel, ALL_LEVELS } from '../data/scoreLevels';
 import type { ResultRow } from '../types/adhd';
 import './adhd-results-chart.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+/** Plugin that draws the data value above each bar */
+const dataLabelsPlugin: Plugin<'bar'> = {
+  id: 'adhdDataLabels',
+  afterDatasetsDraw(chart: ChartType<'bar'>) {
+    const { ctx } = chart;
+    chart.data.datasets.forEach((dataset, datasetIndex) => {
+      const meta = chart.getDatasetMeta(datasetIndex);
+      meta.data.forEach((element, index) => {
+        const value = dataset.data[index];
+        if (value === null || value === undefined) return;
+        const label = String(value);
+        ctx.save();
+        ctx.font = 'bold 13px "Noto Sans Arabic", sans-serif';
+        ctx.fillStyle = '#f1f5f9';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(label, element.x, (element as { y: number }).y - 8);
+        ctx.restore();
+      });
+    });
+  },
+};
 
 interface ADHDResultsChartProps {
   results: ResultRow[];
@@ -142,7 +167,7 @@ export default function ADHDResultsChart({ results }: ADHDResultsChartProps) {
   return (
     <div className="adhd-chart-wrapper">
       <div className="adhd-chart-container">
-        <Bar data={chartData} options={options} />
+        <Bar data={chartData} options={options} plugins={[dataLabelsPlugin]} />
       </div>
 
       {/* Legend */}
