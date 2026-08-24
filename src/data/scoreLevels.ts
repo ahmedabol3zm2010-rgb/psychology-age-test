@@ -1,19 +1,19 @@
+import { getInterpretation } from './adhdtLookup';
+
 export interface ScoreLevel {
   label: string;
   color: string;
 }
 
 /**
- * Determines the score level and associated color for a given standard score.
+ * Determines the bar color based on standard score (matches C# ADHDT chart).
  *
- * Boundaries can be adjusted from this single location.
- * Do NOT duplicate these rules in other files.
+ * Boundaries:
+ *   ≥ 13 → Coral (#ff7f50) — فوق المتوسط فأعلى
+ *   < 13 → SteelBlue (#4682b4) — متوسط فأقل
  *
- * Levels:
- *   < 60  → "ضمن النطاق المتوقع" (green)
- *   60–69 → "يحتاج إلى متابعة"    (yellow)
- *   70–79 → "مرتفع"              (orange)
- *   ≥ 80  → "مرتفع جدًا"         (red)
+ * The interpretation text comes from getInterpretation() in adhdtLookup.ts
+ * so both the chart and the lookup share the same rules.
  */
 export function getScoreLevel(value: number | string | null | undefined): ScoreLevel {
   if (value === null || value === undefined || value === '' || value === '—' || value === 'غير متوفر') {
@@ -26,25 +26,29 @@ export function getScoreLevel(value: number | string | null | undefined): ScoreL
     return { label: 'غير متاح', color: '#64748b' };
   }
 
-  if (score < 60) {
-    return { label: 'ضمن النطاق المتوقع', color: '#22c55e' };
+  if (score >= 13) {
+    return { label: 'فوق المتوسط', color: '#ff7f50' };
   }
 
-  if (score < 70) {
-    return { label: 'يحتاج إلى متابعة', color: '#eab308' };
-  }
+  return { label: 'متوسط', color: '#4682b4' };
+}
 
-  if (score < 80) {
-    return { label: 'مرتفع', color: '#f97316' };
+/** Returns interpretation text and bar color for the chart */
+export function getBarLabel(score: number | string | null | undefined): { value: string; interpretation: string; color: string } {
+  if (score === null || score === undefined || score === '' || score === '—') {
+    return { value: '—', interpretation: 'غير متاح', color: '#64748b' };
   }
-
-  return { label: 'مرتفع جدًا', color: '#ef4444' };
+  const num = Number(score);
+  if (Number.isNaN(num)) {
+    return { value: '—', interpretation: 'غير متاح', color: '#64748b' };
+  }
+  const interp = getInterpretation(num);
+  const level = getScoreLevel(num);
+  return { value: String(num), interpretation: interp.status, color: level.color };
 }
 
 /** All available levels for rendering the legend */
 export const ALL_LEVELS: ScoreLevel[] = [
-  { label: 'ضمن النطاق المتوقع', color: '#22c55e' },
-  { label: 'يحتاج إلى متابعة', color: '#eab308' },
-  { label: 'مرتفع', color: '#f97316' },
-  { label: 'مرتفع جدًا', color: '#ef4444' },
+  { label: 'فوق المتوسط (≥ 13)', color: '#ff7f50' },
+  { label: 'متوسط (< 13)', color: '#4682b4' },
 ];

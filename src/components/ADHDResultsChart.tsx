@@ -12,13 +12,16 @@ import {
   type Chart as ChartType,
   type Plugin,
 } from 'chart.js';
-import { getScoreLevel, ALL_LEVELS } from '../data/scoreLevels';
+import { getBarLabel, ALL_LEVELS } from '../data/scoreLevels';
 import type { ResultRow } from '../types/adhd';
 import './adhd-results-chart.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-/** Plugin that draws the data value above each bar */
+/**
+ * Plugin: draw score + interpretation above each bar
+ * (mirrors the C# point.Label = $"{score}\n({interpretation})")
+ */
 const dataLabelsPlugin: Plugin<'bar'> = {
   id: 'adhdDataLabels',
   afterDatasetsDraw(chart: ChartType<'bar'>) {
@@ -27,17 +30,63 @@ const dataLabelsPlugin: Plugin<'bar'> = {
       const meta = chart.getDatasetMeta(datasetIndex);
       meta.data.forEach((element, index) => {
         const value = dataset.data[index];
-        if (value === null || value === undefined) return;
-        const label = String(value);
+        if (value === null || value === undefined || value === 0) return;
+
+        // Access the bar info we stashed on the dataset
+        const barInfos = (dataset as unknown as { barInfos?: Array<{ value: string; interpretation: string }> }).barInfos;
+        const info = barInfos?.[index];
+
         ctx.save();
-        ctx.font = 'bold 13px "Noto Sans Arabic", sans-serif';
-        ctx.fillStyle = '#f1f5f9';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
-        ctx.fillText(label, element.x, (element as { y: number }).y - 8);
+
+        if (info) {
+          // Line 1: score
+          ctx.font = 'bold 13px "Segoe UI", "Noto Sans Arabic", sans-serif';
+          ctx.fillStyle = '#f1f5f9';
+          ctx.fillText(info.value, element.x, (element as { y: number }).y - 28);
+
+          // Line 2: interpretation in parentheses
+          ctx.font = 'italic 11px "Segoe UI", "Noto Sans Arabic", sans-serif';
+          ctx.fillStyle = '#cbd5e1';
+          ctx.fillText(`(${info.interpretation})`, element.x, (element as { y: number }).y - 10);
+        } else {
+          ctx.font = 'bold 13px "Segoe UI", "Noto Sans Arabic", sans-serif';
+          ctx.fillStyle = '#f1f5f9';
+          ctx.fillText(String(value), element.x, (element as { y: number }).y - 8);
+        }
+
         ctx.restore();
       });
     });
+  },
+};
+
+/**
+ * Plugin: draw a green horizontal strip for the "average range" (8-12)
+ * (mirrors the C# StripLine at IntervalOffset=8, StripWidth=4)
+ */
+const averageStripPlugin: Plugin<'bar'> = {
+  id: 'averageStrip',
+  beforeDraw(chart: ChartType<'bar'>) {
+    const yScale = chart.scales.y;
+    if (!yScale) return;
+
+    const yTop = yScale.getPixelForValue(12);
+    const yBottom = yScale.getPixelForValue(8);
+
+    const { ctx } = chart;
+    ctx.save();
+    ctx.fillStyle = 'rgba(34, 197, 94, 0.18)';
+    ctx.fillRect(chart.chartArea.left, yTop, chart.chartArea.right - chart.chartArea.left, yBottom - yTop);
+
+    // Label on the right side of the strip
+    ctx.font = 'italic 10px "Segoe UI", "Noto Sans Arabic", sans-serif';
+    ctx.fillStyle = 'rgba(34, 197, 94, 0.7)';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('نطاق المتوسط (8 - 12)', chart.chartArea.right - 4, (yTop + yBottom) / 2);
+    ctx.restore();
   },
 };
 
@@ -58,6 +107,10 @@ export default function ADHDResultsChart({ results }: ADHDResultsChartProps) {
     }));
   }, [results]);
 
+  const barInfos = useMemo(() => {
+    return bars.map((b) => getBarLabel(b.value));
+  }, [bars]);
+
   const chartData = useMemo(() => ({
     labels: bars.map((b) => b.label),
     datasets: [
@@ -67,22 +120,15 @@ export default function ADHDResultsChart({ results }: ADHDResultsChartProps) {
           const v = Number(b.value);
           return Number.isNaN(v) ? 0 : v;
         }),
-        backgroundColor: bars.map((b) => getScoreLevel(b.value).color),
-        borderColor: bars.map((b) => getScoreLevel(b.value).color),
+        backgroundColor: barInfos.map((info) => info.color),
+        borderColor: barInfos.map((info) => info.color),
         borderWidth: 1,
-        borderRadius: 8,
-        barPercentage: 0.65,
+        borderRadius: 6,
+        barPercentage: 0.6,
+        barInfos,
       },
     ],
-  }), [bars]);
-
-  const maxScore = useMemo(() => {
-    const nums = bars
-      .map((b) => Number(b.value))
-      .filter((n) => !Number.isNaN(n) && n > 0);
-    const highest = nums.length > 0 ? Math.max(...nums) : 50;
-    return Math.ceil(highest / 10) * 10 + 10;
-  }, [bars]);
+  }), [bars, barInfos]);
 
   const options = useMemo(() => ({
     responsive: true,
@@ -91,31 +137,30 @@ export default function ADHDResultsChart({ results }: ADHDResultsChartProps) {
       legend: { display: false },
       title: {
         display: true,
-        text: 'الرسم البياني للدرجات المعيارية حسب مجالات ADHD-T',
+        text: 'نتائج اختبار ADHDT - الدرجات المعيارية',
         font: {
-          size: 16,
+          size: 15,
           weight: 'bold' as const,
-          family: "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif",
+          family: "'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif",
         },
-        color: '#f1f5f9',
-        padding: { bottom: 16 },
+        color: '#e2e8f0',
+        padding: { bottom: 14 },
       },
       tooltip: {
         rtl: true,
         textDirection: 'rtl' as const,
         titleFont: {
-          family: "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif",
+          family: "'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif",
           size: 13,
         },
         bodyFont: {
-          family: "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif",
+          family: "'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif",
           size: 12,
         },
         callbacks: {
           label: (ctx: TooltipItem<'bar'>) => {
-            const bar = bars[ctx.dataIndex];
-            const level = getScoreLevel(bar.value);
-            return `الدرجة المعيارية: ${bar.value} — ${level.label}`;
+            const info = barInfos[ctx.dataIndex];
+            return `الدرجة المعيارية: ${info.value} — ${info.interpretation}`;
           },
         },
       },
@@ -123,11 +168,12 @@ export default function ADHDResultsChart({ results }: ADHDResultsChartProps) {
     scales: {
       y: {
         beginAtZero: true,
-        max: maxScore,
+        min: 0,
+        max: 20,
         ticks: {
           color: '#94a3b8',
           font: { size: 12 },
-          stepSize: 10,
+          stepSize: 2,
         },
         grid: {
           color: 'rgba(148,163,184,0.12)',
@@ -138,7 +184,7 @@ export default function ADHDResultsChart({ results }: ADHDResultsChartProps) {
           color: '#cbd5e1',
           font: {
             size: 13,
-            family: "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif",
+            family: "'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif",
           },
         },
       },
@@ -147,27 +193,27 @@ export default function ADHDResultsChart({ results }: ADHDResultsChartProps) {
           color: '#e2e8f0',
           font: {
             size: 12,
-            family: "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif",
+            family: "'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif",
           },
         },
         grid: { display: false },
         title: {
           display: true,
-          text: 'مجالات الاختبار',
+          text: 'الأبعاد والدرجة الكلية',
           color: '#cbd5e1',
           font: {
             size: 13,
-            family: "'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif",
+            family: "'Segoe UI', 'Noto Sans Arabic', Tahoma, sans-serif",
           },
         },
       },
     },
-  }), [bars, maxScore]);
+  }), [barInfos]);
 
   return (
     <div className="adhd-chart-wrapper">
       <div className="adhd-chart-container">
-        <Bar data={chartData} options={options} plugins={[dataLabelsPlugin]} />
+        <Bar data={chartData} options={options} plugins={[averageStripPlugin, dataLabelsPlugin]} />
       </div>
 
       {/* Legend */}
@@ -187,27 +233,24 @@ export default function ADHDResultsChart({ results }: ADHDResultsChartProps) {
             <tr>
               <th>المجال</th>
               <th>الدرجة المعيارية</th>
-              <th>المستوى</th>
+              <th>التفسير</th>
             </tr>
           </thead>
           <tbody>
-            {bars.map((bar) => {
-              const level = getScoreLevel(bar.value);
-              return (
-                <tr key={bar.label}>
-                  <td className="adhd-table-label">{bar.label}</td>
-                  <td className="adhd-table-score">{bar.value}</td>
-                  <td>
-                    <span
-                      className="adhd-table-badge"
-                      style={{ backgroundColor: level.color }}
-                    >
-                      {level.label}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
+            {bars.map((bar, i) => (
+              <tr key={bar.label}>
+                <td className="adhd-table-label">{bar.label}</td>
+                <td className="adhd-table-score">{barInfos[i].value}</td>
+                <td>
+                  <span
+                    className="adhd-table-badge"
+                    style={{ backgroundColor: barInfos[i].color }}
+                  >
+                    {barInfos[i].interpretation}
+                  </span>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
