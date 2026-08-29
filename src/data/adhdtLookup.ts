@@ -1,13 +1,38 @@
-import norms from '../../adhdt_male_norms.json' with { type: 'json' };
-import adhdRates from '../../adhdt_male_adhd_rates.json' with { type: 'json' };
-import percentiles from '../../adhdt_male_percentiles.json' with { type: 'json' };
+import maleNorms from '../../adhdt_male_norms.json' with { type: 'json' };
+import maleAdhdRates from '../../adhdt_male_adhd_rates.json' with { type: 'json' };
+import malePercentiles from '../../adhdt_male_percentiles.json' with { type: 'json' };
+import femaleNorms from '../../adhdt_female_norms.json' with { type: 'json' };
+import femaleAdhdRates from '../../adhdt_female_adhd_rates.json' with { type: 'json' };
+import femalePercentiles from '../../adhdt_female_percentiles.json' with { type: 'json' };
 
 export type ScaleKey = 'hyperactivity' | 'impulsivity' | 'inattention' | 'total';
+export type Gender = 'male' | 'female';
 
 export interface LookupResult {
   ageGroup: '3-7' | '8-23' | 'outOfRange';
   standardScore: number | null;
   message: string;
+}
+
+interface Tables {
+  norms: typeof maleNorms;
+  adhdRates: typeof maleAdhdRates;
+  percentiles: typeof malePercentiles;
+}
+
+function getTablesByGender(gender: Gender): Tables {
+  if (gender === 'female') {
+    return {
+      norms: femaleNorms,
+      adhdRates: femaleAdhdRates,
+      percentiles: femalePercentiles,
+    };
+  }
+  return {
+    norms: maleNorms,
+    adhdRates: maleAdhdRates,
+    percentiles: malePercentiles,
+  };
 }
 
 export interface InterpretationResult {
@@ -65,7 +90,7 @@ export function getInterpretation(standardScore: number): InterpretationResult {
   };
 }
 
-export function lookupStandardScore(rawScore: number | '', ageYears: number | null, scale: ScaleKey): LookupResult {
+export function lookupStandardScore(rawScore: number | '', ageYears: number | null, scale: ScaleKey, gender: Gender = 'male'): LookupResult {
   if (rawScore === '' || rawScore === null) {
     return { ageGroup: 'outOfRange', standardScore: null, message: 'أدخل درجة خام أولًا.' };
   }
@@ -75,6 +100,8 @@ export function lookupStandardScore(rawScore: number | '', ageYears: number | nu
     return { ageGroup, standardScore: null, message: 'خارج النطاق العمري للاختبار.' };
   }
 
+  const tables = getTablesByGender(gender);
+  const genderText = gender === 'female' ? 'للإناث' : 'للذكور';
   let standardScore: number | null = null;
 
   if (scale === 'total') {
@@ -89,13 +116,13 @@ export function lookupStandardScore(rawScore: number | '', ageYears: number | nu
 
     // First check subScales for 0-36
     if (rawScore <= 36) {
-      const subRow = norms.subScales.find(row => row.raw === rawScore);
+      const subRow = tables.norms.subScales.find(row => row.raw === rawScore);
       if (subRow && subRow.total) {
         standardScore = subRow.total[ageGroup];
       }
     } else {
       // Check totalScale for 37-72
-      const totalRow = norms.totalScale.find(row => row.raw === rawScore);
+      const totalRow = tables.norms.totalScale.find(row => row.raw === rawScore);
       if (totalRow) {
         standardScore = totalRow.total[ageGroup];
       }
@@ -110,12 +137,12 @@ export function lookupStandardScore(rawScore: number | '', ageYears: number | nu
       };
     }
 
-    const subRow = norms.subScales.find(row => row.raw === rawScore);
+    const subRow = tables.norms.subScales.find(row => row.raw === rawScore);
     if (!subRow) {
       return {
         ageGroup,
         standardScore: null,
-        message: 'لا توجد درجة معيارية لهذه الدرجة الخام في جدول ADHDT للذكور.',
+        message: `لا توجد درجة معيارية لهذه الدرجة الخام في جدول ADHDT ${genderText}.`,
       };
     }
 
@@ -126,14 +153,14 @@ export function lookupStandardScore(rawScore: number | '', ageYears: number | nu
     return {
       ageGroup,
       standardScore: null,
-      message: 'لا توجد درجة معيارية لهذه الدرجة الخام في جدول ADHDT للذكور.',
+      message: `لا توجد درجة معيارية لهذه الدرجة الخام في جدول ADHDT ${genderText}.`,
     };
   }
 
   return {
     ageGroup,
     standardScore: standardScore,
-    message: 'تم العثور على الدرجة المعيارية من جدول ADHDT للذكور.',
+    message: `تم العثور على الدرجة المعيارية من جدول ADHDT ${genderText}.`,
   };
 }
 
@@ -142,7 +169,7 @@ export function interpretStandardScore(standardScore: number | null): Interpreta
   return getInterpretation(standardScore);
 }
 
-export function lookupADHDRate(rawScore: number | '', ageYears: number | null, scale: ScaleKey): LookupResult {
+export function lookupADHDRate(rawScore: number | '', ageYears: number | null, scale: ScaleKey, gender: Gender = 'male'): LookupResult {
   if (rawScore === '' || rawScore === null) {
     return { ageGroup: 'outOfRange', standardScore: null, message: 'أدخل درجة خام أولًا.' };
   }
@@ -152,6 +179,8 @@ export function lookupADHDRate(rawScore: number | '', ageYears: number | null, s
     return { ageGroup, standardScore: null, message: 'خارج النطاق العمري للاختبار.' };
   }
 
+  const tables = getTablesByGender(gender);
+  const genderText = gender === 'female' ? 'للإناث' : 'للذكور';
   let adhdRate: number | null = null;
 
   if (scale === 'total') {
@@ -166,13 +195,13 @@ export function lookupADHDRate(rawScore: number | '', ageYears: number | null, s
 
     // First check subScales for 0-36
     if (rawScore <= 36) {
-      const subRow = adhdRates.subScales.find(row => row.raw === rawScore);
+      const subRow = tables.adhdRates.subScales.find(row => row.raw === rawScore);
       if (subRow && subRow.total) {
         adhdRate = subRow.total[ageGroup];
       }
     } else {
       // Check totalScale for 37-72
-      const totalRow = adhdRates.totalScale.find(row => row.raw === rawScore);
+      const totalRow = tables.adhdRates.totalScale.find(row => row.raw === rawScore);
       if (totalRow) {
         adhdRate = totalRow.total[ageGroup];
       }
@@ -187,12 +216,12 @@ export function lookupADHDRate(rawScore: number | '', ageYears: number | null, s
       };
     }
 
-    const subRow = adhdRates.subScales.find(row => row.raw === rawScore);
+    const subRow = tables.adhdRates.subScales.find(row => row.raw === rawScore);
     if (!subRow) {
       return {
         ageGroup,
         standardScore: null,
-        message: 'لا توجد نسبة اضطراب لهذه الدرجة الخام في جدول ADHDT للذكور.',
+        message: `لا توجد نسبة اضطراب لهذه الدرجة الخام في جدول ADHDT ${genderText}.`,
       };
     }
 
@@ -203,18 +232,18 @@ export function lookupADHDRate(rawScore: number | '', ageYears: number | null, s
     return {
       ageGroup,
       standardScore: null,
-      message: 'لا توجد نسبة اضطراب لهذه الدرجة الخام في جدول ADHDT للذكور.',
+      message: `لا توجد نسبة اضطراب لهذه الدرجة الخام في جدول ADHDT ${genderText}.`,
     };
   }
 
   return {
     ageGroup,
     standardScore: adhdRate,
-    message: 'تم العثور على نسبة اضطراب ADHD من جدول ملحق (5).',
+    message: `تم العثور على نسبة اضطراب ADHD من جدول ADHDT ${genderText}.`,
   };
 }
 
-export function lookupPercentile(rawScore: number | '', ageYears: number | null, scale: ScaleKey): LookupResult {
+export function lookupPercentile(rawScore: number | '', ageYears: number | null, scale: ScaleKey, gender: Gender = 'male'): LookupResult {
   if (rawScore === '' || rawScore === null) {
     return { ageGroup: 'outOfRange', standardScore: null, message: 'أدخل درجة خام أولًا.' };
   }
@@ -224,6 +253,8 @@ export function lookupPercentile(rawScore: number | '', ageYears: number | null,
     return { ageGroup, standardScore: null, message: 'خارج النطاق العمري للاختبار.' };
   }
 
+  const tables = getTablesByGender(gender);
+  const genderText = gender === 'female' ? 'للإناث' : 'للذكور';
   let percentile: number | null = null;
 
   if (scale === 'total') {
@@ -238,13 +269,13 @@ export function lookupPercentile(rawScore: number | '', ageYears: number | null,
 
     // First check subScales for 0-36
     if (rawScore <= 36) {
-      const subRow = percentiles.subScales.find(row => row.raw === rawScore);
+      const subRow = tables.percentiles.subScales.find(row => row.raw === rawScore);
       if (subRow && subRow.total) {
         percentile = subRow.total[ageGroup];
       }
     } else {
       // Check totalScale for 37-72
-      const totalRow = percentiles.totalScale.find(row => row.raw === rawScore);
+      const totalRow = tables.percentiles.totalScale.find(row => row.raw === rawScore);
       if (totalRow) {
         percentile = totalRow.total[ageGroup];
       }
@@ -259,12 +290,12 @@ export function lookupPercentile(rawScore: number | '', ageYears: number | null,
       };
     }
 
-    const subRow = percentiles.subScales.find(row => row.raw === rawScore);
+    const subRow = tables.percentiles.subScales.find(row => row.raw === rawScore);
     if (!subRow) {
       return {
         ageGroup,
         standardScore: null,
-        message: 'لا توجد درجة مئينية لهذه الدرجة الخام في جدول ADHDT للذكور.',
+        message: `لا توجد درجة مئينية لهذه الدرجة الخام في جدول ADHDT ${genderText}.`,
       };
     }
 
@@ -275,13 +306,13 @@ export function lookupPercentile(rawScore: number | '', ageYears: number | null,
     return {
       ageGroup,
       standardScore: null,
-      message: 'لا توجد درجة مئينية لهذه الدرجة الخام في جدول ADHDT للذكور.',
+      message: `لا توجد درجة مئينية لهذه الدرجة الخام في جدول ADHDT ${genderText}.`,
     };
   }
 
   return {
     ageGroup,
     standardScore: percentile,
-    message: 'تم العثور على الدرجة المئينية من جدول ADHDT للذكور.',
+    message: `تم العثور على الدرجة المئينية من جدول ADHDT ${genderText}.`,
   };
 }

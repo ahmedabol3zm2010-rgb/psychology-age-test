@@ -63,50 +63,7 @@ function getAgeGroup(age: number | null): AgeGroup {
 }
 
 function getResultRows(scores: ScoreFormData, ageGroup: AgeGroup, gender: 'ذكر' | 'أنثى', ageYears: number | null): ResultRow[] {
-  if (gender === 'أنثى') {
-    return [
-      {
-        measure: 'فرط الحركة',
-        rawScore: scores.hyperactivity,
-        normativeScore: 'غير متوفر',
-        disorderRatio: 'غير متوفر',
-        status: 'غير متوفر',
-        adhdRate: 'غير متوفر',
-        percentileScore: 'غير متوفر',
-        lookupMessage: 'جدول المعايير الخاص بالإناث غير متوفر حاليًا.',
-      },
-      {
-        measure: 'الاندفاع',
-        rawScore: scores.impulsivity,
-        normativeScore: 'غير متوفر',
-        disorderRatio: 'غير متوفر',
-        status: 'غير متوفر',
-        adhdRate: 'غير متوفر',
-        percentileScore: 'غير متوفر',
-        lookupMessage: 'جدول المعايير الخاص بالإناث غير متوفر حاليًا.',
-      },
-      {
-        measure: 'نقص الانتباه',
-        rawScore: scores.inattention,
-        normativeScore: 'غير متوفر',
-        disorderRatio: 'غير متوفر',
-        status: 'غير متوفر',
-        adhdRate: 'غير متوفر',
-        percentileScore: 'غير متوفر',
-        lookupMessage: 'جدول المعايير الخاص بالإناث غير متوفر حاليًا.',
-      },
-      {
-        measure: 'المجموع',
-        rawScore: scores.total,
-        normativeScore: 'غير متوفر',
-        disorderRatio: 'غير متوفر',
-        status: 'غير متوفر',
-        adhdRate: 'غير متوفر',
-        percentileScore: 'غير متوفر',
-        lookupMessage: 'جدول المعايير الخاص بالإناث غير متوفر حاليًا.',
-      },
-    ];
-  }
+  const genderParam = gender === 'أنثى' ? 'female' : 'male';
 
   if (ageGroup === 'خارج النطاق') {
     return [
@@ -183,16 +140,16 @@ function getResultRows(scores: ScoreFormData, ageGroup: AgeGroup, gender: 'ذك�
 
     const lookup = lookupMessage
       ? { ageGroup: ageGroup as '3-7' | '8-23', standardScore: null as number | null, message: lookupMessage }
-      : lookupStandardScore(rawScore as number | '', ageYears, key);
+      : lookupStandardScore(rawScore as number | '', ageYears, key, genderParam);
     const formattedScore = lookup.standardScore === null ? '—' : lookup.standardScore.toString();
 
     const adhdLookup = (lookup.standardScore !== null && !lookupMessage)
-      ? lookupADHDRate(rawScore as number | '', ageYears, key)
+      ? lookupADHDRate(rawScore as number | '', ageYears, key, genderParam)
       : { standardScore: null as number | null, message: '' };
     const formattedADHDRate = adhdLookup.standardScore === null ? '—' : adhdLookup.standardScore.toString();
 
     const percentileLookup = (!lookupMessage)
-      ? lookupPercentile(rawScore as number | '', ageYears, key)
+      ? lookupPercentile(rawScore as number | '', ageYears, key, genderParam)
       : { standardScore: null as number | null, message: '' };
     const formattedPercentile = percentileLookup.standardScore === null ? '—' : percentileLookup.standardScore.toString();
 
@@ -284,16 +241,17 @@ export default function App() {
     const totalDisplay = autoTotal !== null ? String(autoTotal) : '—';
     const baseRows: ReviewRow[] = [
       { rowNumber: 1, label: 'اسم الفرد', value: patient.fullName || '—' },
-      { rowNumber: 2, label: 'تاريخ الميلاد', value: patient.birthDate || '—' },
-      { rowNumber: 3, label: 'تاريخ التقدير', value: patient.assessmentDate || '—' },
-      { rowNumber: 4, label: 'العمر', value: ageText },
-      { rowNumber: 5, label: 'الفئة العمرية', value: ageGroupLabel },
-      { rowNumber: 6, label: 'فرط الحركة (Raw)', value: scores.hyperactivity === '' ? '—' : String(scores.hyperactivity) },
-      { rowNumber: 7, label: 'الاندفاع (Raw)', value: scores.impulsivity === '' ? '—' : String(scores.impulsivity) },
-      { rowNumber: 8, label: 'نقص الانتباه (Raw)', value: scores.inattention === '' ? '—' : String(scores.inattention) },
-      { rowNumber: 9, label: 'المجموع (Raw)', value: totalDisplay },
-      { rowNumber: 10, label: 'اسم الفاحص', value: patient.examinerName || '—' },
-      { rowNumber: 11, label: 'وظيفة الفاحص', value: patient.examinerRole || '—' },
+      { rowNumber: 2, label: 'الجنس', value: patient.gender },
+      { rowNumber: 3, label: 'تاريخ الميلاد', value: patient.birthDate || '—' },
+      { rowNumber: 4, label: 'تاريخ التقدير', value: patient.assessmentDate || '—' },
+      { rowNumber: 5, label: 'العمر', value: ageText },
+      { rowNumber: 6, label: 'الفئة العمرية', value: ageGroupLabel },
+      { rowNumber: 7, label: 'فرط الحركة (Raw)', value: scores.hyperactivity === '' ? '—' : String(scores.hyperactivity) },
+      { rowNumber: 8, label: 'الاندفاع (Raw)', value: scores.impulsivity === '' ? '—' : String(scores.impulsivity) },
+      { rowNumber: 9, label: 'نقص الانتباه (Raw)', value: scores.inattention === '' ? '—' : String(scores.inattention) },
+      { rowNumber: 10, label: 'المجموع (Raw)', value: totalDisplay },
+      { rowNumber: 11, label: 'اسم الفاحص', value: patient.examinerName || '—' },
+      { rowNumber: 12, label: 'وظيفة الفاحص', value: patient.examinerRole || '—' },
     ];
 
     return baseRows;
@@ -347,7 +305,7 @@ export default function App() {
         />
 
         <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-6">
+          <div className="space-y-6 no-print">
             <PatientForm
               formData={patient}
               onChange={handlePatientChange}
@@ -358,7 +316,7 @@ export default function App() {
             <ScoreForm scores={scores} onChange={handleScoreChange} helperText={scoreWarning} />
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-6 no-print">
             <ReportPanel
               patient={patient}
               ageText={ageText}
@@ -377,7 +335,7 @@ export default function App() {
           </div>
         </div>
 
-        <section className="overflow-hidden rounded-3xl border border-white/10 bg-slate-800/80 shadow-xl shadow-black/20">
+        <section className="overflow-hidden rounded-3xl border border-white/10 bg-slate-800/80 shadow-xl shadow-black/20 no-print">
           <div className="bg-slate-900/80 p-4">
             <h2 className="text-xl font-semibold text-white">جدول المراجعة</h2>
             <p className="mt-1 text-sm text-slate-400">لا يتم اعتماد أي تقرير فعلي إلا بعد الموافقة الصريحة على هذه القيم.</p>
@@ -420,7 +378,7 @@ export default function App() {
             ageGroupLabel={ageGroupLabel}
           />
         )}
-        <Footer />
+        <Footer className="no-print" />
       </div>
     </div>
   );
