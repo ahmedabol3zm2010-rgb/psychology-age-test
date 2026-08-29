@@ -22,6 +22,9 @@ body {
   body {
     background: white;
     color: black;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-size: 12pt;
   }
 
   .no-print {
@@ -31,5 +34,105 @@ body {
   .print-card {
     box-shadow: none !important;
     border: 1px solid #d1d5db;
+    page-break-inside: avoid;
+  }
+
+  /* تحسين منع التقسيم - فقط للعناصر المهمة */
+  table {
+    page-break-inside: auto;
+  }
+
+  thead {
+    page-break-after: auto;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+
+  section {
+    page-break-inside: avoid;
+    margin-bottom: 15px;
+  }
+
+  /* تحسين تنسيق النصوص العربية */
+  * {
+    direction: rtl;
+    text-align: right;
+  }
+
+  /* تحسين المسافات للطباعة */
+  .p-4, .p-6 {
+    padding: 8px !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 12px !important;
+  }
+
+  /* تحسين العرض للطباعة */
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  /* تحسين الألوان للطباعة - جميع الألوان فاتحة */
+  .bg-slate-900\/80, .bg-slate-900\/70, .bg-slate-900\/50, .bg-slate-800\/80 {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb;
+  }
+
+  .text-white {
+    color: #1f2937 !important;
+  }
+
+  .text-slate-200, .text-slate-300, .text-slate-400 {
+    color: #4b5563 !important;
+  }
+
+  .border-slate-700\/70, .border-slate-700\/50, .border-white\/10 {
+    border-color: #d1d5db !important;
+  }
+
+  /* تحسين صفوف الجدول الرمادية */
+  table tbody tr {
+    background-color: #f9fafb !important;
+  }
+
+  table tbody tr:nth-child(even) {
+    background-color: #f3f4f6 !important;
+  }
+
+  table tbody tr:hover {
+    background-color: #e5e7eb !important;
+  }
+
+  /* تحسين خلفية رأس الجدول */
+  table thead {
+    background-color: #e5e7eb !important;
+  }
+
+  table thead th {
+    background-color: #e5e7eb !important;
+    color: #1f2937 !important;
+  }
+
+  /* تحسين الرسم البياني للطباعة */
+  canvas, svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* تحسين الخلفيات الداكنة الأخرى */
+  .bg-slate-950\/60, .bg-slate-950\/70 {
+    background-color: #f8f9fa !important;
+  }
+
+  /* تحسين حدود الكروات */
+  .rounded-3xl, .rounded-2xl, .rounded-xl {
+    border-radius: 8px !important;
   }
 }
