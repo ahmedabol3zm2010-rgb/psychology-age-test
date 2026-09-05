@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GoldGuard.Pages.HistoryPage"
+             Title="سجل العمليات"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="#17A2B8" Padding="15" Margin="0" HasShadow="False">
+            <Label Text="📜 سجل العمليات" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   TextColor="White"
+                   HorizontalOptions="Center"/>
+        </Frame>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            <!-- Filter Buttons -->
+            <Frame Grid.Row="0" BackgroundColor="#F8F9FA" Padding="10" Margin="10,5" CornerRadius="10">
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="5">
+                    <Button Grid.Column="0" 
+                            Text="الكل" 
+                            Clicked="OnFilterAllClicked"
+                            BackgroundColor="#17A2B8"
+                            TextColor="White"
+                            FontSize="12"
+                            CornerRadius="8"/>
+                    
+                    <Button Grid.Column="1" 
+                            Text="شراء" 
+                            Clicked="OnFilterBuyClicked"
+                            BackgroundColor="#28A745"
+                            TextColor="White"
+                            FontSize="12"
+                            CornerRadius="8"/>
+                    
+                    <Button Grid.Column="2" 
+                            Text="بيع" 
+                            Clicked="OnFilterSellClicked"
+                            BackgroundColor="#DC3545"
+                            TextColor="White"
+                            FontSize="12"
+                            CornerRadius="8"/>
+                </Grid>
+            </Frame>
+
+            <!-- Transactions List -->
+            <ScrollView Grid.Row="1">
+                <CollectionView x:Name="TransactionsCollection" 
+                               EmptyView="لا توجد عمليات محفوظة">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame BackgroundColor="White" 
+                                   CornerRadius="10" 
+                                   Padding="15" 
+                                   Margin="10,5"
+                                   HasShadow="True">
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="5">
+                                    <!-- Type and Date -->
+                                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" 
+                                               Text="{Binding TransactionTypeText}" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold"
+                                               TextColor="{Binding TypeColor}"/>
+                                        <Label Grid.Column="1" 
+                                               Text="{Binding FormattedDate}" 
+                                               FontSize="12" 
+                                               TextColor="#666"/>
+                                    </Grid>
+
+                                    <!-- Karat and Weight -->
+                                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" 
+                                               Text="{Binding KaratText}" 
+                                               FontSize="14" 
+                                               TextColor="#333"/>
+                                        <Label Grid.Column="1" 
+                                               Text="{Binding WeightText}" 
+                                               FontSize="14" 
+                                               TextColor="#333"/>
+                                    </Grid>
+
+                                    <!-- Price and Total -->
+                                    <Grid Grid.Row="2" ColumnDefinitions="*,Auto">
+                                        <Label Grid.Column="0" 
+                                               Text="{Binding PriceText}" 
+                                               FontSize="14" 
+                                               TextColor="#333"/>
+                                        <Label Grid.Column="1" 
+                                               Text="{Binding FormattedTotal}" 
+                                               FontSize="16" 
+                                               FontAttributes="Bold"
+                                               TextColor="#2E7D32"/>
+                                    </Grid>
+
+                                    <!-- Delete Button -->
+                                    <Button Grid.Row="3" 
+                                            Text="🗑️ حذف" 
+                                            CommandParameter="{Binding Id}"
+                                            Clicked="OnDeleteClicked"
+                                            BackgroundColor="#DC3545"
+                                            TextColor="White"
+                                            FontSize="12"
+                                            CornerRadius="5"
+                                            HorizontalOptions="End"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
+        </Grid>
+
+        <!-- Footer Buttons -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="10" Padding="10">
+            <Button Grid.Column="0"
+                    Text="🗑️ مسح الكل"
+                    Clicked="OnClearAllClicked"
+                    BackgroundColor="#DC3545"
+                    TextColor="White"
+                    FontSize="14"
+                    CornerRadius="10"/>
+            
+            <Button Grid.Column="1"
+                    Text="← رجوع"
+                    Clicked="OnBackClicked"
+                    BackgroundColor="#6C757D"
+                    TextColor="White"
+                    FontSize="14"
+                    CornerRadius="10"/>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GoldGuard.Pages.SettingsPage"
+             Title="الإعدادات"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="#6C757D" Padding="15" Margin="0" HasShadow="False">
+            <Label Text="⚙️ الإعدادات" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   TextColor="White"
+                   HorizontalOptions="Center"/>
+        </Frame>
+
+        <!-- Main Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="15" Spacing="15">
+                
+                <!-- Default Manufacturing Percentage -->
+                <Frame BackgroundColor="#F8F9FA" CornerRadius="10" Padding="15">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="مصنعية الشراء الافتراضية (%)" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
+                        <Entry x:Name="DefaultManufacturingEntry" 
+                               Placeholder="5" 
+                               Keyboard="Numeric"/>
+                        <Label Text="القيمة الافتراضية عند شراء الذهب" FontSize="12" TextColor="#666"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Default Sell Discount -->
+                <Frame BackgroundColor="#F8F9FA" CornerRadius="10" Padding="15">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="خصم البيع الافتراضي (%)" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
+                        <Entry x:Name="DefaultDiscountEntry" 
+                               Placeholder="2" 
+                               Keyboard="Numeric"/>
+                        <Label Text="القيمة الافتراضية عند بيع الذهب" FontSize="12" TextColor="#666"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Default Stamp Fee -->
+                <Frame BackgroundColor="#F8F9FA" CornerRadius="10" Padding="15">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="الدمغة/الرسوم الافتراضية (جنيه)" FontSize="16" FontAttributes="Bold" TextColor="#333"/>
+                        <Entry x:Name="DefaultStampEntry" 
+                               Placeholder="10" 
+                               Keyboard="Numeric"/>
+                        <Label Text="القيمة الافتراضية للدمغة لكل جرام" FontSize="12" TextColor="#666"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Info Section -->
+                <Frame BackgroundColor="#E3F2FD" CornerRadius="10" Padding="15">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="ℹ️ معلومات" FontSize="16" FontAttributes="Bold" TextColor="#1976D2"/>
+                        <Label Text="هذه القيم الافتراضية تُستخدم لملء الحقول تلقائياً. يمكنك تغييرها في أي وقت حسب تفضيلاتك أو أسعار المحل الذي تتعامل معه." 
+                               FontSize="13" 
+                               TextColor="#333"
+                               LineBreakMode="WordWrap"/>
+                        <Label Text="ملاحظة: المصنعية والدمغة تختلف من محل لآخر ومن منتج لآخر، لذا يُنصح دائماً بالتأكد من الأسعار الفعلية قبل الشراء أو البيع." 
+                               FontSize="12" 
+                               TextColor="#666"
+                               LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Save Button -->
+                <Button Text="💾 حفظ الإعدادات" 
+                        Clicked="OnSaveClicked"
+                        BackgroundColor="#007BFF"
+                        TextColor="White"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        CornerRadius="10"/>
+
+                <!-- Reset Button -->
+                <Button Text="🔄 استعادة الافتراضيات" 
+                        Clicked="OnResetClicked"
+                        BackgroundColor="#6C757D"
+                        TextColor="White"
+                        FontSize="16"
+                        CornerRadius="10"/>
+
+                <!-- App Info -->
+                <Frame BackgroundColor="#F8F9FA" CornerRadius="10" Padding="15">
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="حارس الذهب - Gold Guard" FontSize="16" FontAttributes="Bold" TextColor="#333" HorizontalOptions="Center"/>
+                        <Label Text="الإصدار 1.0" FontSize="14" TextColor="#666" HorizontalOptions="Center"/>
+                        <Label Text="تطبيق لمساعدتك في حساب أسعار الذهب بدقة" FontSize="12" TextColor="#666" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Back Button -->
+        <Button Grid.Row="2" 
+                Text="← رجوع" 
+                Clicked="OnBackClicked"
+                BackgroundColor="#6C757D"
+                TextColor="White"
+                FontSize="16"
+                CornerRadius="0"
+                HeightRequest="50"/>
+    </Grid>
+</ContentPage>

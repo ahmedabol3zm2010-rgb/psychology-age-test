@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حارس الذهب</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            padding: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .connection-status {
+            text-align: center;
+            padding: 12px;
+            margin: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .connection-status.online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .connection-status.offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .gold-prices {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .gold-prices h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .price-table th {
+            background: #667eea;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .price-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+
+        .price-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .nav-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .sell-btn {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .secondary-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 0 20px 20px;
+        }
+
+        .secondary-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .settings-btn {
+            background: #6c757d;
+        }
+
+        .history-btn {
+            background: #17a2b8;
+        }
+
+        .update-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px;
+            margin: 10px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: calc(100% - 40px);
+        }
+
+        .page {
+            display: none;
+            padding: 20px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .result-value {
+            font-weight: bold;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .total-value {
+            font-size: 20px;
+            color: #667eea;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .comparison-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .comparison-box h4 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .difference-positive {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .difference-negative {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .share-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .last-update {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .transaction-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .transaction-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .transaction-type {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .transaction-type.buy {
+            color: #28a745;
+        }
+
+        .transaction-type.sell {
+            color: #dc3545;
+        }
+
+        .transaction-date {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .transaction-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .transaction-total {
+            grid-column: 1 / -1;
+            font-weight: bold;
+            font-size: 16px;
+            color: #2e7d32;
+            margin-top: 8px;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .filter-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .filter-all {
+            background: #17a2b8;
+        }
+
+        .filter-buy {
+            background: #28a745;
+        }
+
+        .filter-sell {
+            background: #dc3545;
+        }
+
+        .clear-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .nav-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .secondary-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ حارس الذهب</h1>
+            <p>اعرف السعر المفروض قبل ما تشتري أو تبيع الذهب</p>
+            <p id="current-date" style="margin-top: 5px; font-size: 12px;">جاري التحميل...</p>
+        </div>
+
+        <!-- الصفحة الرئيسية -->
+        <div id="home-page" class="page active">
+            <div class="connection-status online" id="connection-status">
+                🟢 متصل بالإنترنت
+            </div>
+
+            <div class="gold-prices">
+                <h3>📊 أسعار الذهب الحالية</h3>
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>العيار</th>
+                            <th>شراء</th>
+                            <th>بيع</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>24</td>
+                            <td id="price-24-buy">—</td>
+                            <td id="price-24-sell">—</td>
+                        </tr>
+                        <tr>
+                            <td>22</td>
+                            <td id="price-22-buy">—</td>
+                            <td id="price-22-sell">—</td>
+                        </tr>
+                        <tr>
+                            <td>21</td>
+                            <td id="price-21-buy">—</td>
+                            <td id="price-21-sell">—</td>
+                        </tr>
+                        <tr>
+                            <td>18</td>
+                            <td id="price-18-buy">—</td>
+                            <td id="price-18-sell">—</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td id="price-14-buy">—</td>
+                            <td id="price-14-sell">—</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="last-update" id="last-update">آخر تحديث: —</div>
+            </div>
+
+            <button class="update-btn" onclick="updatePrices()">🔄 تحديث الأسعار الآن</button>
+
+            <div class="nav-buttons">
+                <button class="nav-btn buy-btn" onclick="showPage('buy-page')">🟡 شراء ذهب</button>
+                <button class="nav-btn sell-btn" onclick="showPage('sell-page')">🟢 بيع ذهب</button>
+            </div>
+
+            <div class="secondary-buttons">
+                <button class="secondary-btn settings-btn" onclick="showPage('settings-page')">⚙️ الإعدادات</button>
+                <button class="secondary-btn history-btn" onclick="showPage('history-page')">📜 سجل العمليات</button>
+            </div>
+        </div>
+
+        <!-- صفحة شراء الذهب -->
+        <div id="buy-page" class="page">
+            <button class="back-btn" onclick="showPage('home-page')">← رجوع</button>
+            <h2>🛒 شراء ذهب</h2>
+            
+            <div class="form-group">
+                <label>عيار الذهب:</label>
+                <select id="buy-karat" onchange="updateBuyPrice()">
+                    <option value="24">عيار 24</option>
+                    <option value="22">عيار 22</option>
+                    <option value="21" selected>عيار 21</option>
+                    <option value="18">عيار 18</option>
+                    <option value="14">عيار 14</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>سعر جرام الذهب (جنيه):</label>
+                <input type="number" id="buy-price" placeholder="سعر الجرام" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>الوزن بالجرام:</label>
+                <input type="number" id="buy-weight" placeholder="الوزن بالجرام" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>المصنعية (%):</label>
+                <input type="number" id="buy-manufacturing" value="5" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label>الدمغة/الرسوم (جنيه للجرام):</label>
+                <input type="number" id="buy-stamp" value="10" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>رسوم إضافية (اختياري):</label>
+                <input type="number" id="buy-extra" value="0" step="0.01">
+            </div>
+
+            <button class="calculate-btn" onclick="calculateBuy()">💰 احسب السعر</button>
+
+            <div class="result-box" id="buy-result" style="display: none;">
+                <h3>💰 السعر المفروض تدفعه</h3>
+                <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; margin: 15px 0;">
+                    <div id="buy-total" style="font-size: 36px; font-weight: bold; color: white;">0 جنيه</div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 20px;">
+                    <label style="font-size: 18px; font-weight: bold;">🏪 السعر اللي قاله المحل:</label>
+                    <input type="number" id="shop-price-buy" placeholder="اكتب السعر هنا" step="0.01" style="font-size: 18px; padding: 15px;" oninput="compareBuyPrice()">
+                </div>
+                
+                <div id="buy-diff-result" style="margin-top: 20px;"></div>
+                
+                <button class="share-btn" onclick="shareBuyResult()">📤 مشاركة النتيجة</button>
+            </div>
+        </div>
+
+        <!-- صفحة بيع الذهب -->
+        <div id="sell-page" class="page">
+            <button class="back-btn" onclick="showPage('home-page')">← رجوع</button>
+            <h2>💰 بيع ذهب</h2>
+            
+            <div class="form-group">
+                <label>عيار الذهب:</label>
+                <select id="sell-karat" onchange="updateSellPrice()">
+                    <option value="24">عيار 24</option>
+                    <option value="22">عيار 22</option>
+                    <option value="21" selected>عيار 21</option>
+                    <option value="18">عيار 18</option>
+                    <option value="14">عيار 14</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>سعر جرام الذهب الحالي (جنيه):</label>
+                <input type="number" id="sell-price" placeholder="سعر الجرام" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>الوزن بالجرام:</label>
+                <input type="number" id="sell-weight" placeholder="الوزن بالجرام" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>نسبة الخصم/المصنعية (%):</label>
+                <input type="number" id="sell-discount" value="2" step="0.1">
+            </div>
+
+            <button class="calculate-btn" onclick="calculateSell()">💰 احسب قيمة البيع</button>
+
+            <div class="result-box" id="sell-result" style="display: none;">
+                <h3>📊 النتائج</h3>
+                <div class="result-item">
+                    <span class="result-label">🟡 سعر الجرام الحالي:</span>
+                    <span class="result-value" id="sell-original-price">0 جنيه</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">📉 نسبة الخصم:</span>
+                    <span class="result-value" id="sell-discount-percentage">0%</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">📉 قيمة الخصم لكل جرام:</span>
+                    <span class="result-value" id="sell-discount-value">0 جنيه</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">💵 سعر الجرام بعد الخصم:</span>
+                    <span class="result-value" id="sell-net-price">0 جنيه</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">⚖️ الوزن:</span>
+                    <span class="result-value" id="sell-weight-value">0 جرام</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">💵 القيمة المتوقعة للبيع:</span>
+                    <span class="result-value total-value" id="sell-total">0 جنيه</span>
+                </div>
+                <button class="share-btn" onclick="shareSellResult()">📤 مشاركة النتيجة</button>
+            </div>
+
+            <div class="comparison-box" id="sell-comparison" style="display: none;">
+                <h4>🏪 المحل عرض عليك كام؟</h4>
+                <div class="form-group">
+                    <label>السعر الذي عرضه المحل:</label>
+                    <input type="number" id="shop-price-sell" placeholder="مثال: 48000" step="0.01">
+                </div>
+                <button class="calculate-btn" onclick="compareSellPrice()">⚖️ قارن الأسعار</button>
+                <div id="sell-diff-result" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+
+        <!-- صفحة الإعدادات -->
+        <div id="settings-page" class="page">
+            <button class="back-btn" onclick="showPage('home-page')">← رجوع</button>
+            <h2>⚙️ الإعدادات</h2>
+            
+            <div class="form-group">
+                <label>مصنعية الشراء الافتراضية (%):</label>
+                <input type="number" id="default-manufacturing" value="5" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label>خصم البيع الافتراضي (%):</label>
+                <input type="number" id="default-discount" value="2" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label>الدمغة/الرسوم الافتراضية (جنيه):</label>
+                <input type="number" id="default-stamp" value="10" step="0.01">
+            </div>
+
+            <button class="calculate-btn" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+            <button class="calculate-btn" style="background: #6c757d;" onclick="resetSettings()">🔄 استعادة الافتراضيات</button>
+
+            <div class="result-box" style="margin-top: 20px;">
+                <h3>ℹ️ معلومات</h3>
+                <p style="margin-top: 10px; color: #666; line-height: 1.6;">
+                    هذه القيم الافتراضية تُستخدم لملء الحقول تلقائياً. يمكنك تغييرها في أي وقت حسب تفضيلاتك أو أسعار المحل الذي تتعامل معه.
+                </p>
+                <p style="margin-top: 10px; color: #666; line-height: 1.6;">
+                    ملاحظة: المصنعية والدمغة تختلف من محل لآخر ومن منتج لآخر، لذا يُنصح دائماً بالتأكد من الأسعار الفعلية قبل الشراء أو البيع.
+                </p>
+            </div>
+        </div>
+
+        <!-- صفحة سجل العمليات -->
+        <div id="history-page" class="page">
+            <button class="back-btn" onclick="showPage('home-page')">← رجوع</button>
+            <h2>📜 سجل العمليات</h2>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn filter-all" onclick="filterTransactions('all')">الكل</button>
+                <button class="filter-btn filter-buy" onclick="filterTransactions('buy')">شراء</button>
+                <button class="filter-btn filter-sell" onclick="filterTransactions('sell')">بيع</button>
+            </div>
+
+            <div id="transactions-list">
+                <p style="text-align: center; color: #666; padding: 20px;">لا توجد عمليات محفوظة</p>
+            </div>
+
+            <button class="clear-btn" onclick="clearAllTransactions()">🗑️ مسح الكل</button>
+        </div>
+    </div>
+
+    <script>
+        // المتغيرات العامة
+        let goldPrices = [];
+        let transactions = [];
+        let currentFilter = 'all';
+        let lastBuyCalculation = null;
+        let lastSellCalculation = null;
+
+        // التحميل عند بدء التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            checkInternetConnection();
+            loadSettings();
+            loadTransactions();
+            loadGoldPrices();
+            
+            // تحديث تلقائي كل 5 دقائق
+            setInterval(loadGoldPrices, 5 * 60 * 1000);
+        });
+
+        // تحديث التاريخ والوقت
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('ar-EG', options);
+        }
+
+        // التحقق من الاتصال بالإنترنت
+        function checkInternetConnection() {
+            const status = document.getElementById('connection-status');
+            if (navigator.onLine) {
+                status.className = 'connection-status online';
+                status.innerHTML = '🟢 متصل بالإنترنت';
+            } else {
+                status.className = 'connection-status offline';
+                status.innerHTML = '⚠️ لا يوجد اتصال بالإنترنت - يستخدم آخر أسعار محفوظة';
+            }
+        }
+
+        window.addEventListener('online', checkInternetConnection);
+        window.addEventListener('offline', checkInternetConnection);
+
+        // التنقل بين الصفحات
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            
+            if (pageId === 'buy-page') {
+                updateBuyPrice();
+            } else if (pageId === 'sell-page') {
+                updateSellPrice();
+            } else if (pageId === 'history-page') {
+                renderTransactions();
+            }
+        }
+
+        // تحميل أسعار الذهب
+        function loadGoldPrices() {
+            try {
+                // محاولة تحميل من التخزين المحلي
+                const cachedPrices = localStorage.getItem('cached_gold_prices');
+                const lastUpdate = localStorage.getItem('last_price_update');
+                
+                if (cachedPrices) {
+                    goldPrices = JSON.parse(cachedPrices);
+                    updatePriceDisplay();
+                    
+                    if (lastUpdate) {
+                        const updateDate = new Date(lastUpdate);
+                        document.getElementById('last-update').textContent = 
+                            `آخر تحديث: ${updateDate.toLocaleTimeString('ar-EG')}`;
+                    }
+                } else {
+                    // استخدام بيانات افتراضية
+                    goldPrices = getDefaultGoldPrices();
+                    updatePriceDisplay();
+                }
+                
+                // محاولة تحديث من API (محاكاة)
+                if (navigator.onLine) {
+                    fetchGoldPricesFromAPI();
+                }
+            } catch (error) {
+                console.error('Error loading gold prices:', error);
+                goldPrices = getDefaultGoldPrices();
+                updatePriceDisplay();
+            }
+        }
+
+        function getDefaultGoldPrices() {
+            return [
+                { karat: 24, buyPrice: 5200, sellPrice: 5150 },
+                { karat: 22, buyPrice: 4766.67, sellPrice: 4716.67 },
+                { karat: 21, buyPrice: 4550, sellPrice: 4500 },
+                { karat: 18, buyPrice: 3900, sellPrice: 3850 },
+                { karat: 14, buyPrice: 3033.33, sellPrice: 2983.33 }
+            ];
+        }
+
+        async function fetchGoldPricesFromAPI() {
+            try {
+                // محاكاة استدعاء API
+                // في الواقع، هنا سيتم الاتصال بـ API حقيقي
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // استخدام البيانات الافتراضية مؤقتاً
+                const freshPrices = getDefaultGoldPrices();
+                
+                goldPrices = freshPrices;
+                localStorage.setItem('cached_gold_prices', JSON.stringify(goldPrices));
+                localStorage.setItem('last_price_update', new Date().toISOString());
+                
+                updatePriceDisplay();
+                
+                const updateDate = new Date();
+                document.getElementById('last-update').textContent = 
+                    `آخر تحديث: ${updateDate.toLocaleTimeString('ar-EG')}`;
+                    
+            } catch (error) {
+                console.error('Error fetching prices from API:', error);
+            }
+        }
+
+        function updatePriceDisplay() {
+            goldPrices.forEach(price => {
+                const buyElement = document.getElementById(`price-${price.karat}-buy`);
+                const sellElement = document.getElementById(`price-${price.karat}-sell`);
+                
+                if (buyElement) {
+                    buyElement.textContent = formatCurrency(price.buyPrice);
+                }
+                if (sellElement) {
+                    sellElement.textContent = formatCurrency(price.sellPrice);
+                }
+            });
+        }
+
+        function updatePrices() {
+            const btn = document.querySelector('.update-btn');
+            btn.textContent = '⏳ جاري التحديث...';
+            btn.disabled = true;
+            
+            fetchGoldPricesFromAPI().then(() => {
+                btn.textContent = '🔄 تحديث الأسعار الآن';
+                btn.disabled = false;
+                alert('تم تحديث الأسعار بنجاح');
+            }).catch(() => {
+                btn.textContent = '🔄 تحديث الأسعار الآن';
+                btn.disabled = false;
+                alert('فشل تحديث الأسعار. يتم استخدام آخر أسعار محفوظة');
+            });
+        }
+
+        function formatCurrency(value) {
+            return value.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' جنيه';
+        }
+
+        function formatWeight(value) {
+            return value.toLocaleString('ar-EG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' جرام';
+        }
+
+        // تحديث سعر الشراء بناءً على العيار
+        function updateBuyPrice() {
+            const karat = parseInt(document.getElementById('buy-karat').value);
+            const price = goldPrices.find(p => p.karat === karat);
+            
+            if (price) {
+                document.getElementById('buy-price').value = price.sellPrice.toFixed(2);
+            }
+        }
+
+        // تحديث سعر البيع بناءً على العيار
+        function updateSellPrice() {
+            const karat = parseInt(document.getElementById('sell-karat').value);
+            const price = goldPrices.find(p => p.karat === karat);
+            
+            if (price) {
+                document.getElementById('sell-price').value = price.buyPrice.toFixed(2);
+            }
+        }
+
+        // حساب شراء الذهب
+        function calculateBuy() {
+            const pricePerGram = parseFloat(document.getElementById('buy-price').value) || 0;
+            const weight = parseFloat(document.getElementById('buy-weight').value) || 0;
+            const manufacturingPercentage = parseFloat(document.getElementById('buy-manufacturing').value) || 0;
+            const stampFee = parseFloat(document.getElementById('buy-stamp').value) || 0;
+            const extraFees = parseFloat(document.getElementById('buy-extra').value) || 0;
+
+            if (pricePerGram <= 0 || weight <= 0) {
+                alert('الرجاء إدخال سعر الجرام والوزن بشكل صحيح');
+                return;
+            }
+
+            if (manufacturingPercentage < 0 || stampFee < 0 || extraFees < 0) {
+                alert('القيم يجب أن تكون موجبة');
+                return;
+            }
+
+            const goldValue = pricePerGram * weight;
+            const manufacturingValue = goldValue * (manufacturingPercentage / 100);
+            const stampValue = stampFee * weight;
+            const total = goldValue + manufacturingValue + stampValue + extraFees;
+            const finalPricePerGram = total / weight;
+
+            lastBuyCalculation = {
+                karat: parseInt(document.getElementById('buy-karat').value),
+                pricePerGram,
+                weight,
+                manufacturingPercentage,
+                stampFee,
+                extraFees,
+                goldValue,
+                manufacturingValue,
+                stampValue,
+                total,
+                finalPricePerGram
+            };
+
+            // عرض السعر النهائي فقط
+            document.getElementById('buy-total').textContent = formatCurrency(total);
+
+            document.getElementById('buy-result').style.display = 'block';
+
+            // حفظ العملية
+            saveTransaction('buy', lastBuyCalculation);
+        }
+
+        // حساب بيع الذهب
+        function calculateSell() {
+            const pricePerGram = parseFloat(document.getElementById('sell-price').value) || 0;
+            const weight = parseFloat(document.getElementById('sell-weight').value) || 0;
+            const discountPercentage = parseFloat(document.getElementById('sell-discount').value) || 0;
+
+            if (pricePerGram <= 0 || weight <= 0) {
+                alert('الرجاء إدخال سعر الجرام والوزن بشكل صحيح');
+                return;
+            }
+
+            if (discountPercentage < 0) {
+                alert('نسبة الخصم يجب أن تكون موجبة');
+                return;
+            }
+
+            const discountValuePerGram = pricePerGram * (discountPercentage / 100);
+            const netPricePerGram = pricePerGram - discountValuePerGram;
+            const total = netPricePerGram * weight;
+
+            lastSellCalculation = {
+                karat: parseInt(document.getElementById('sell-karat').value),
+                pricePerGram,
+                weight,
+                discountPercentage,
+                discountValuePerGram,
+                netPricePerGram,
+                total
+            };
+
+            document.getElementById('sell-original-price').textContent = formatCurrency(pricePerGram);
+            document.getElementById('sell-discount-percentage').textContent = discountPercentage.toFixed(1) + '%';
+            document.getElementById('sell-discount-value').textContent = formatCurrency(discountValuePerGram);
+            document.getElementById('sell-net-price').textContent = formatCurrency(netPricePerGram);
+            document.getElementById('sell-weight-value').textContent = formatWeight(weight);
+            document.getElementById('sell-total').textContent = formatCurrency(total);
+
+            document.getElementById('sell-result').style.display = 'block';
+            document.getElementById('sell-comparison').style.display = 'block';
+
+            // حفظ العملية
+            saveTransaction('sell', lastSellCalculation);
+        }
+
+        // مقارنة سعر الشراء
+        function compareBuyPrice() {
+            if (!lastBuyCalculation) {
+                return;
+            }
+
+            const shopPrice = parseFloat(document.getElementById('shop-price-buy').value) || 0;
+            if (shopPrice <= 0) {
+                document.getElementById('buy-diff-result').innerHTML = '';
+                return;
+            }
+
+            const expectedPrice = lastBuyCalculation.total;
+            const difference = shopPrice - expectedPrice;
+            const differencePercent = (difference / expectedPrice) * 100;
+
+            let resultHtml = '';
+            if (difference > 0) {
+                resultHtml = `
+                    <div style="background: #ffebee; padding: 20px; border-radius: 15px; border: 2px solid #ef5350; margin-top: 15px;">
+                        <h3 style="color: #c62828; font-size: 24px; margin-bottom: 15px; text-align: center;">⚠️ الفرق: ${formatCurrency(difference)} زيادة</h3>
+                        <p style="color: #333; font-size: 18px; text-align: center; margin-bottom: 10px;">${differencePercent.toFixed(2)}% أعلى من السعر المحسوب</p>
+                        <p style="color: #666; font-size: 14px; text-align: center; margin-top: 15px;">ملاحظة: هذا لا يعني بالضرورة أن المحل يغش، لأن المصنعية والرسوم تختلف من منتج لآخر.</p>
+                    </div>
+                `;
+            } else if (difference < 0) {
+                resultHtml = `
+                    <div style="background: #e8f5e9; padding: 20px; border-radius: 15px; border: 2px solid #66bb6a; margin-top: 15px;">
+                        <h3 style="color: #2e7d32; font-size: 24px; margin-bottom: 15px; text-align: center;">✅ الفرق: ${formatCurrency(Math.abs(difference))} أقل</h3>
+                        <p style="color: #333; font-size: 18px; text-align: center;">${Math.abs(differencePercent).toFixed(2)}% أقل من السعر المحسوب</p>
+                    </div>
+                `;
+            } else {
+                resultHtml = `
+                    <div style="background: #e8f5e9; padding: 20px; border-radius: 15px; border: 2px solid #66bb6a; margin-top: 15px;">
+                        <h3 style="color: #2e7d32; font-size: 24px; margin-bottom: 15px; text-align: center;">✅ السعر مطابق للسعر المحسوب</h3>
+                    </div>
+                `;
+            }
+
+            document.getElementById('buy-diff-result').innerHTML = resultHtml;
+        }
+
+        // مقارنة سعر البيع
+        function compareSellPrice() {
+            if (!lastSellCalculation) {
+                alert('الرجاء إجراء الحساب أولاً');
+                return;
+            }
+
+            const shopPrice = parseFloat(document.getElementById('shop-price-sell').value) || 0;
+            if (shopPrice <= 0) {
+                alert('الرجاء إدخال سعر المحل بشكل صحيح');
+                return;
+            }
+
+            const expectedPrice = lastSellCalculation.total;
+            const difference = shopPrice - expectedPrice;
+            const differencePercent = (difference / expectedPrice) * 100;
+
+            let resultHtml = '';
+            if (difference > 0) {
+                resultHtml = `<p class="difference-positive">✅ الفرق: +${formatCurrency(difference)} (${differencePercent.toFixed(1)}%)</p>
+                           <p style="margin-top: 10px; color: #333;">المحل عرض أكثر من السعر المتوقع!</p>`;
+            } else if (difference < 0) {
+                resultHtml = `<p class="difference-negative">⚠️ الفرق: ${formatCurrency(difference)} (${differencePercent.toFixed(1)}%)</p>
+                           <p style="margin-top: 10px; color: #333;">المحل عرض أقل من السعر المتوقع.</p>
+                           <p style="margin-top: 10px; color: #666; font-size: 14px;">ملاحظة: هذا قد يكون بسبب اختلاف المصنعية أو رسوم أخرى.</p>`;
+            } else {
+                resultHtml = `<p class="difference-positive">✅ السعر متطابق تماماً!</p>`;
+            }
+
+            document.getElementById('sell-diff-result').innerHTML = resultHtml;
+        }
+
+        // مشاركة نتيجة الشراء
+        function shareBuyResult() {
+            if (!lastBuyCalculation) {
+                alert('الرجاء إجراء الحساب أولاً');
+                return;
+            }
+
+            const karat = document.getElementById('buy-karat').value;
+            const shareText = `🛡️ حارس الذهب - شراء\n\n` +
+                           `عيار: ${karat}\n` +
+                           `الوزن: ${formatWeight(lastBuyCalculation.weight)}\n` +
+                           `سعر الجرام: ${formatCurrency(lastBuyCalculation.pricePerGram)}\n` +
+                           `المصنعية: ${lastBuyCalculation.manufacturingPercentage}%\n` +
+                           `الدمغة: ${lastBuyCalculation.stampFee} جنيه/جرام\n\n` +
+                           `💰 قيمة الذهب: ${formatCurrency(lastBuyCalculation.goldValue)}\n` +
+                           `🔨 المصنعية: ${formatCurrency(lastBuyCalculation.manufacturingValue)}\n` +
+                           `🧾 الدمغة: ${formatCurrency(lastBuyCalculation.stampValue)}\n` +
+                           `💵 الإجمالي: ${formatCurrency(lastBuyCalculation.total)}\n\n` +
+                           `تم الحساب بواسطة تطبيق حارس الذهب - اعرف السعر المفروض قبل ما تشتري أو تبيع الذهب`;
+
+            shareTextContent(shareText);
+        }
+
+        // مشاركة نتيجة البيع
+        function shareSellResult() {
+            if (!lastSellCalculation) {
+                alert('الرجاء إجراء الحساب أولاً');
+                return;
+            }
+
+            const karat = document.getElementById('sell-karat').value;
+            const shareText = `🛡️ حارس الذهب - بيع\n\n` +
+                           `عيار: ${karat}\n` +
+                           `الوزن: ${formatWeight(lastSellCalculation.weight)}\n` +
+                           `سعر الجرام: ${formatCurrency(lastSellCalculation.pricePerGram)}\n` +
+                           `نسبة الخصم: ${lastSellCalculation.discountPercentage}%\n\n` +
+                           `🟡 سعر الجرام الحالي: ${formatCurrency(lastSellCalculation.pricePerGram)}\n` +
+                           `📉 الخصم: ${formatCurrency(lastSellCalculation.discountValuePerGram)}/جرام\n` +
+                           `💵 القيمة المتوقعة للبيع: ${formatCurrency(lastSellCalculation.total)}\n\n` +
+                           `تم الحساب بواسطة تطبيق حارس الذهب - اعرف السعر المفروض قبل ما تشتري أو تبيع الذهب`;
+
+            shareTextContent(shareText);
+        }
+
+        function shareTextContent(text) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'حارس الذهب',
+                    text: text
+                }).catch(console.error);
+            } else {
+                // نسخ للحافظة
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('تم نسخ النتيجة إلى الحافظة');
+                }).catch(() => {
+                    // فallback: إنشاء textarea
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    alert('تم نسخ النتيجة إلى الحافظة');
+                });
+            }
+        }
+
+        // إدارة الإعدادات
+        function loadSettings() {
+            const defaultManufacturing = localStorage.getItem('default_manufacturing') || '5';
+            const defaultDiscount = localStorage.getItem('default_discount') || '2';
+            const defaultStamp = localStorage.getItem('default_stamp') || '10';
+
+            document.getElementById('default-manufacturing').value = defaultManufacturing;
+            document.getElementById('default-discount').value = defaultDiscount;
+            document.getElementById('default-stamp').value = defaultStamp;
+
+            document.getElementById('buy-manufacturing').value = defaultManufacturing;
+            document.getElementById('sell-discount').value = defaultDiscount;
+            document.getElementById('buy-stamp').value = defaultStamp;
+        }
+
+        function saveSettings() {
+            const defaultManufacturing = parseFloat(document.getElementById('default-manufacturing').value);
+            const defaultDiscount = parseFloat(document.getElementById('default-discount').value);
+            const defaultStamp = parseFloat(document.getElementById('default-stamp').value);
+
+            if (defaultManufacturing < 0 || defaultDiscount < 0 || defaultStamp < 0) {
+                alert('القيم يجب أن تكون موجبة');
+                return;
+            }
+
+            localStorage.setItem('default_manufacturing', defaultManufacturing);
+            localStorage.setItem('default_discount', defaultDiscount);
+            localStorage.setItem('default_stamp', defaultStamp);
+
+            // تحديث القيم في الصفحات
+            document.getElementById('buy-manufacturing').value = defaultManufacturing;
+            document.getElementById('sell-discount').value = defaultDiscount;
+            document.getElementById('buy-stamp').value = defaultStamp;
+
+            alert('تم حفظ الإعدادات بنجاح');
+        }
+
+        function resetSettings() {
+            if (confirm('هل تريد استعادة القيم الافتراضية؟')) {
+                document.getElementById('default-manufacturing').value = '5';
+                document.getElementById('default-discount').value = '2';
+                document.getElementById('default-stamp').value = '10';
+                saveSettings();
+            }
+        }
+
+        // إدارة العمليات
+        function loadTransactions() {
+            try {
+                const saved = localStorage.getItem('transactions');
+                if (saved) {
+                    transactions = JSON.parse(saved);
+                }
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                transactions = [];
+            }
+        }
+
+        function saveTransaction(type, calculation) {
+            const transaction = {
+                id: Date.now(),
+                type: type,
+                karat: calculation.karat,
+                weight: calculation.weight,
+                pricePerGram: calculation.pricePerGram,
+                manufacturingPercentage: calculation.manufacturingPercentage || 0,
+                stampFee: calculation.stampFee || 0,
+                discountPercentage: calculation.discountPercentage || 0,
+                goldValue: calculation.goldValue || 0,
+                manufacturingValue: calculation.manufacturingValue || 0,
+                stampValue: calculation.stampValue || 0,
+                total: calculation.total,
+                createdAt: new Date().toISOString()
+            };
+
+            transactions.unshift(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
+
+        function renderTransactions() {
+            const container = document.getElementById('transactions-list');
+            let filteredTransactions = transactions;
+
+            if (currentFilter !== 'all') {
+                filteredTransactions = transactions.filter(t => t.type === currentFilter);
+            }
+
+            if (filteredTransactions.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">لا توجد عمليات محفوظة</p>';
+                return;
+            }
+
+            container.innerHTML = filteredTransactions.map(t => {
+                const date = new Date(t.createdAt);
+                const typeText = t.type === 'buy' ? 'شراء' : 'بيع';
+                const typeClass = t.type === 'buy' ? 'buy' : 'sell';
+                
+                let details = '';
+                if (t.type === 'buy') {
+                    details = `
+                        <div>عيار: ${t.karat}</div>
+                        <div>الوزن: ${formatWeight(t.weight)}</div>
+                        <div>السعر: ${formatCurrency(t.pricePerGram)}/جرام</div>
+                        <div class="transaction-total">الإجمالي: ${formatCurrency(t.total)}</div>
+                    `;
+                } else {
+                    details = `
+                        <div>عيار: ${t.karat}</div>
+                        <div>الوزن: ${formatWeight(t.weight)}</div>
+                        <div>السعر: ${formatCurrency(t.pricePerGram)}/جرام</div>
+                        <div class="transaction-total">القيمة: ${formatCurrency(t.total)}</div>
+                    `;
+                }
+
+                return `
+                    <div class="transaction-item">
+                        <div class="transaction-header">
+                            <span class="transaction-type ${typeClass}">${typeText}</span>
+                            <span class="transaction-date">${date.toLocaleDateString('ar-EG')} ${date.toLocaleTimeString('ar-EG')}</span>
+                        </div>
+                        <div class="transaction-details">
+                            ${details}
+                        </div>
+                        <button class="delete-btn" onclick="deleteTransaction(${t.id})">🗑️ حذف</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterTransactions(filter) {
+            currentFilter = filter;
+            renderTransactions();
+        }
+
+        function deleteTransaction(id) {
+            if (confirm('هل تريد حذف هذه العملية؟')) {
+                transactions = transactions.filter(t => t.id !== id);
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                renderTransactions();
+            }
+        }
+
+        function clearAllTransactions() {
+            if (transactions.length === 0) {
+                alert('لا توجد عمليات لمسحها');
+                return;
+            }
+
+            if (confirm('هل تريد مسح جميع العمليات؟')) {
+                transactions = [];
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                renderTransactions();
+                alert('تم مسح جميع العمليات بنجاح');
+            }
+        }
+    </script>
+</body>
+</html>

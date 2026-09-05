@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GoldGuard.Pages.MainPage"
+             Title="حارس الذهب"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <!-- Header -->
+        <Frame Grid.Row="0" BackgroundColor="#FFD700" Padding="20" Margin="0" HasShadow="False">
+            <VerticalStackLayout Spacing="5">
+                <Label Text="🥇 حارس الذهب" 
+                       FontSize="28" 
+                       FontAttributes="Bold" 
+                       TextColor="#333333"
+                       HorizontalOptions="Center"/>
+                <Label x:Name="CurrentDateTimeLabel" 
+                       Text="جاري التحميل..." 
+                       FontSize="14" 
+                       TextColor="#666666"
+                       HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Connection Status -->
+        <Frame Grid.Row="1" 
+               x:Name="ConnectionStatusFrame" 
+               BackgroundColor="#D4EDDA" 
+               Padding="15" 
+               Margin="10,5" 
+               CornerRadius="10">
+            <Label x:Name="ConnectionStatusLabel" 
+                   Text="🟢 متصل بالإنترنت" 
+                   FontSize="14" 
+                   TextColor="#155724"
+                   HorizontalOptions="Center"/>
+        </Frame>
+
+        <!-- Main Content -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Padding="15" Spacing="15">
+                
+                <!-- Action Buttons -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Text="🟡 شراء ذهب"
+                            Clicked="OnBuyGoldClicked"
+                            BackgroundColor="#28A745"
+                            TextColor="White"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            CornerRadius="15"
+                            HeightRequest="80"
+                            Margin="0"/>
+                    
+                    <Button Grid.Column="1"
+                            Text="🟢 بيع ذهب"
+                            Clicked="OnSellGoldClicked"
+                            BackgroundColor="#DC3545"
+                            TextColor="White"
+                            FontSize="16"
+                            FontAttributes="Bold"
+                            CornerRadius="15"
+                            HeightRequest="80"
+                            Margin="0"/>
+                </Grid>
+
+                <!-- Gold Prices Section -->
+                <Frame BackgroundColor="#F8F9FA" CornerRadius="15" Padding="15" HasShadow="True">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="📊 أسعار الذهب الحالية" 
+                               FontSize="18" 
+                               FontAttributes="Bold" 
+                               TextColor="#333333"/>
+                        
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" RowSpacing="8">
+                            <!-- Header -->
+                            <Label Grid.Column="0" Text="العيار" FontAttributes="Bold" FontSize="12"/>
+                            <Label Grid.Column="1" Text="شراء" FontAttributes="Bold" FontSize="12" HorizontalOptions="Center"/>
+                            <Label Grid.Column="2" Text="بيع" FontAttributes="Bold" FontSize="12"/>
+                            
+                            <!-- 24K -->
+                            <Label Grid.Row="1" Grid.Column="0" Text="24" FontSize="14"/>
+                            <Label Grid.Row="1" Grid.Column="1" x:Name="Price24Buy" Text="—" FontSize="14" HorizontalOptions="Center"/>
+                            <Label Grid.Row="1" Grid.Column="2" x:Name="Price24Sell" Text="—" FontSize="14"/>
+                            
+                            <!-- 22K -->
+                            <Label Grid.Row="2" Grid.Column="0" Text="22" FontSize="14"/>
+                            <Label Grid.Row="2" Grid.Column="1" x:Name="Price22Buy" Text="—" FontSize="14" HorizontalOptions="Center"/>
+                            <Label Grid.Row="2" Grid.Column="2" x:Name="Price22Sell" Text="—" FontSize="14"/>
+                            
+                            <!-- 21K -->
+                            <Label Grid.Row="3" Grid.Column="0" Text="21" FontSize="14"/>
+                            <Label Grid.Row="3" Grid.Column="1" x:Name="Price21Buy" Text="—" FontSize="14" HorizontalOptions="Center"/>
+                            <Label Grid.Row="3" Grid.Column="2" x:Name="Price21Sell" Text="—" FontSize="14"/>
+                            
+                            <!-- 18K -->
+                            <Label Grid.Row="4" Grid.Column="0" Text="18" FontSize="14"/>
+                            <Label Grid.Row="4" Grid.Column="1" x:Name="Price18Buy" Text="—" FontSize="14" HorizontalOptions="Center"/>
+                            <Label Grid.Row="4" Grid.Column="2" x:Name="Price18Sell" Text="—" FontSize="14"/>
+                            
+                            <!-- 14K -->
+                            <Label Grid.Row="5" Grid.Column="0" Text="14" FontSize="14"/>
+                            <Label Grid.Row="5" Grid.Column="1" x:Name="Price14Buy" Text="—" FontSize="14" HorizontalOptions="Center"/>
+                            <Label Grid.Row="5" Grid.Column="2" x:Name="Price14Sell" Text="—" FontSize="14"/>
+                        </Grid>
+
+                        <Label x:Name="LastUpdateLabel" 
+                               Text="آخر تحديث: —" 
+                               FontSize="12" 
+                               TextColor="#666666"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Update Button -->
+                <Button x:Name="UpdatePricesButton"
+                        Text="🔄 تحديث الأسعار الآن"
+                        Clicked="OnUpdatePricesClicked"
+                        BackgroundColor="#007BFF"
+                        TextColor="White"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        CornerRadius="10"
+                        IsEnabled="True"/>
+
+                <!-- Navigation Buttons -->
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Text="⚙️ الإعدادات"
+                            Clicked="OnSettingsClicked"
+                            BackgroundColor="#6C757D"
+                            TextColor="White"
+                            FontSize="14"
+                            CornerRadius="10"/>
+                    
+                    <Button Grid.Column="1"
+                            Text="📜 سجل العمليات"
+                            Clicked="OnHistoryClicked"
+                            BackgroundColor="#17A2B8"
+                            TextColor="White"
+                            FontSize="14"
+                            CornerRadius="10"/>
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>
